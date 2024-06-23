@@ -1,6 +1,6 @@
 const userModel = require('../models/user_model');
-const bycript = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 
@@ -11,7 +11,9 @@ const secretKey = process.env.SECRETKEY;
 
 async function signUp (req,res){
     const {username,userMail,userPassword} = req.body;
+    console.log('signup is running');
     try{
+        console.log('one step');
         // test case passed
         if(!username || !userMail || !userPassword){
             return res.status(400).json({
@@ -21,13 +23,19 @@ async function signUp (req,res){
         const existingUser = await userModel.findOne({email:userMail});
 
         // test case passed this working
+        console.log('2 step');
 
         if(existingUser){
             return res.status(400).json({
                 message:"user already exists"
             });
         }
-        const hashedPassword = await  bycript.hash(userPassword,10);
+        console.log('2.1 step');
+
+        const hashedPassword = await  bcrypt.hash(userPassword,10);
+        console.log('2.2step');
+
+        console.log('two step');
 
         // test case passed user is created 
         const result = await userModel.create({
@@ -36,10 +44,14 @@ async function signUp (req,res){
             password:hashedPassword
         });
 
+        console.log('3 step');
+
         const token = jwt.sign({
             email: result.username,
             id: result._id
         },secretKey);
+        console.log('four step');
+
         return res.status(200).json({
             message:"successfully created account",
             token : token
@@ -73,7 +85,7 @@ async function logIn(req,res){
                 message:"user dosen't exists"
             });
         }
-        const matchPassword = await bycript.compare(userPassword,existingUser.password);
+        const matchPassword = await bcrypt.compare(userPassword,existingUser.password);
         if(!matchPassword){
             return res.status(400).json({
                 message:"password dosen't matched"
@@ -95,7 +107,52 @@ async function logIn(req,res){
     }
 }
 
+async function updateUser(req, res) {
+    const updateData = req.body;
+
+    if (!updateData) {
+        return res.status(400).json({
+            message: "Request body cannot be empty"
+        });
+    }
+
+    if (!updateData.email) {
+        return res.status(400).json({
+            message: "Email is required"
+        });
+    }
+
+    try {
+        const { email, ...updateFields } = updateData;
+
+        const existingUser = await userModel.findOneAndUpdate(
+            { email: email },
+            { $set: updateFields },
+            { new: true }
+        );
+
+        if (!existingUser) {
+            return res.status(400).json({
+                message: "User doesn't exist"
+            });
+        }
+
+        return res.status(200).json({
+            message: 'User updated successfully',
+            user: existingUser
+        });
+
+    } catch (error) {
+        console.error('Error in updateUser:', error);
+        return res.status(500).json({
+            message: "Something went wrong"
+        });
+    }
+}
+
+
 module.exports = {
     signUp,
-    logIn
+    logIn,
+    updateUser
 }
