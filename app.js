@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const db = require('./db');
 const userRoute = require('./routers/user_route');
-
+const keyRoute = require('./routers/key_route');
 require('dotenv').config();
 
 const app = express();
@@ -15,6 +15,8 @@ app.get('/test', (req, res) => {
     console.log('test route is working');
     res.send('Test route is working');
 });
+
+app.use('/key',keyRoute);
 
 
 app.use('/user',userRoute);
