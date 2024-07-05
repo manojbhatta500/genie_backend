@@ -12,10 +12,9 @@ const archiveSchema = new mongoose.Schema({
         required:true
     },
    
-    email: {
+    content: {
         type: String,
         required: true,
-        unique: true
     }
 }, { timestamps: true });
 
