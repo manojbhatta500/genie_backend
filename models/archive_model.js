@@ -11,14 +11,17 @@ const archiveSchema = new mongoose.Schema({
         enum: ['Song', 'Poetry', 'Story'],
         required:true
     },
-   
+    title:{
+        type:String,
+        required:true
+    },
     content: {
         type: String,
         required: true,
     }
 }, { timestamps: true });
 
-const ArchiveModel = mongoose.model('archiveSchema', archiveSchema);
+const ArchiveModel = mongoose.model('ArchiveSchema', archiveSchema);
 
 module.exports = ArchiveModel;
  

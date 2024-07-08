@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 
- const localMongoDbUrl = 'mongodb://127.0.0.1:27017/genie';
+//  const localMongoDbUrl = 'mongodb://127.0.0.1:27017/genie';
 
-//  const mongoConnectionApi = process.env.MONGOURL;
-mongoose.connect(localMongoDbUrl,{});
+  const mongoConnectionApi = process.env.MONGOURL;
+mongoose.connect(mongoConnectionApi,{});
 
 
 
